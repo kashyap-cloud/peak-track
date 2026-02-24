@@ -2,13 +2,14 @@ import { useState, useRef, useCallback } from 'react';
 
 interface ScoreSliderProps {
   label: string;
+  description?: string;
   value: number;
   onChange: (value: number) => void;
   lowLabel: string;
   highLabel: string;
 }
 
-export default function ScoreSlider({ label, value, onChange, lowLabel, highLabel }: ScoreSliderProps) {
+export default function ScoreSlider({ label, description, value, onChange, lowLabel, highLabel }: ScoreSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -40,7 +41,12 @@ export default function ScoreSlider({ label, value, onChange, lowLabel, highLabe
   return (
     <div className="space-y-3">
       <div className="flex items-baseline justify-between">
-        <label className="text-sm font-medium text-foreground">{label}</label>
+        <div>
+          <label className="text-sm font-medium text-foreground">{label}</label>
+          {description && (
+            <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+          )}
+        </div>
         <span className="font-mono text-2xl font-semibold text-primary tabular-nums">
           {value}
         </span>
@@ -55,7 +61,7 @@ export default function ScoreSlider({ label, value, onChange, lowLabel, highLabe
         <div className="slider-track w-full" />
         <div className="slider-fill absolute left-0" style={{ width: `${pct}%` }} />
         <div
-          className={`slider-thumb absolute -translate-x-1/2 ${isDragging ? 'animate-pulse-ring scale-110' : ''}`}
+          className={`slider-thumb absolute -translate-x-1/2 ${isDragging ? 'scale-110' : ''}`}
           style={{ left: `${pct}%` }}
         />
       </div>

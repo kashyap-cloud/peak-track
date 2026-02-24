@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, Cell, CartesianGrid } from 'recharts';
 import { TrendingUp, Brain, Shield, BarChart3 } from 'lucide-react';
 import { getLast7Days, getLast14Days, getConsistencyZone } from '@/lib/tracker-data';
 
@@ -25,7 +25,7 @@ export default function PerformanceInsights() {
   }, [last14]);
 
   const consistency = useMemo(() => {
-    if (last7.length === 0) return null;
+    if (last7.length < 3) return null;
     const avg = last7.reduce((s, e) => s + e.execution_score, 0) / last7.length;
     return { avg: Math.round(avg * 10) / 10, ...getConsistencyZone(avg) };
   }, [last7]);
@@ -41,12 +41,14 @@ export default function PerformanceInsights() {
     return improvement > 0 ? improvement : null;
   }, [last7]);
 
-  if (last7.length === 0) {
+  const totalEntries = getLast14Days().length;
+
+  if (totalEntries < 3) {
     return (
       <div className="stat-card text-center py-8">
         <BarChart3 className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
         <p className="text-sm text-muted-foreground">
-          Start tracking to see your performance insights here.
+          Log at least 3 days to see performance insights.
         </p>
       </div>
     );
@@ -62,36 +64,37 @@ export default function PerformanceInsights() {
         </div>
         <ResponsiveContainer width="100%" height={160}>
           <LineChart data={trendData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 13% 90%)" />
             <XAxis
               dataKey="date"
-              tick={{ fill: 'hsl(215 12% 48%)', fontSize: 11, fontFamily: 'JetBrains Mono' }}
+              tick={{ fill: 'hsl(220 9% 46%)', fontSize: 11, fontFamily: 'JetBrains Mono' }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
               domain={[0, 10]}
-              tick={{ fill: 'hsl(215 12% 48%)', fontSize: 11, fontFamily: 'JetBrains Mono' }}
+              tick={{ fill: 'hsl(220 9% 46%)', fontSize: 11, fontFamily: 'JetBrains Mono' }}
               axisLine={false}
               tickLine={false}
               width={24}
             />
             <Tooltip
               contentStyle={{
-                background: 'hsl(220 14% 9%)',
-                border: '1px solid hsl(220 12% 16%)',
+                background: 'hsl(0 0% 100%)',
+                border: '1px solid hsl(220 13% 90%)',
                 borderRadius: '6px',
                 fontSize: '12px',
                 fontFamily: 'JetBrains Mono',
               }}
-              labelStyle={{ color: 'hsl(215 12% 48%)' }}
+              labelStyle={{ color: 'hsl(220 9% 46%)' }}
             />
             <Line
               type="monotone"
               dataKey="score"
-              stroke="hsl(160 64% 43%)"
+              stroke="hsl(162 63% 36%)"
               strokeWidth={2}
-              dot={{ fill: 'hsl(160 64% 43%)', r: 3 }}
-              activeDot={{ r: 5, fill: 'hsl(160 64% 43%)' }}
+              dot={{ fill: 'hsl(162 63% 36%)', r: 3 }}
+              activeDot={{ r: 5, fill: 'hsl(162 63% 36%)' }}
             />
           </LineChart>
         </ResponsiveContainer>
@@ -102,7 +105,7 @@ export default function PerformanceInsights() {
         {correlation && (
           <div className="stat-card">
             <div className="flex items-center gap-2 mb-2">
-              <Brain className="w-4 h-4 text-info" />
+              <Brain className="w-4 h-4 text-[hsl(var(--info))]" />
               <h3 className="text-sm font-medium text-foreground">Focus × Execution</h3>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
@@ -115,7 +118,7 @@ export default function PerformanceInsights() {
         {consistency && (
           <div className="stat-card">
             <div className="flex items-center gap-2 mb-2">
-              <Shield className="w-4 h-4 text-warning" />
+              <Shield className="w-4 h-4 text-[hsl(var(--warning))]" />
               <h3 className="text-sm font-medium text-foreground">Consistency Score</h3>
             </div>
             <div className="flex items-baseline gap-2">
@@ -136,7 +139,7 @@ export default function PerformanceInsights() {
       {blockerData.length > 0 && (
         <div className="stat-card">
           <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="w-4 h-4 text-warning" />
+            <BarChart3 className="w-4 h-4 text-[hsl(var(--warning))]" />
             <h3 className="text-sm font-medium text-foreground">Blocker Frequency (14 Days)</h3>
           </div>
           <ResponsiveContainer width="100%" height={140}>
@@ -145,14 +148,14 @@ export default function PerformanceInsights() {
               <YAxis
                 type="category"
                 dataKey="name"
-                tick={{ fill: 'hsl(215 12% 48%)', fontSize: 11 }}
+                tick={{ fill: 'hsl(220 9% 46%)', fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
                 width={120}
               />
               <Bar dataKey="count" radius={[0, 4, 4, 0]} maxBarSize={18}>
                 {blockerData.map((_, i) => (
-                  <Cell key={i} fill={i === 0 ? 'hsl(35 90% 55%)' : 'hsl(220 12% 20%)'} />
+                  <Cell key={i} fill={i === 0 ? 'hsl(35 90% 45%)' : 'hsl(220 13% 85%)'} />
                 ))}
               </Bar>
             </BarChart>

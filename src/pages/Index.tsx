@@ -12,7 +12,9 @@ const Index = () => {
   const [mentalClarity, setMentalClarity] = useState(5);
   const [priorityCompleted, setPriorityCompleted] = useState<boolean | null>(null);
   const [primaryBlocker, setPrimaryBlocker] = useState('');
+  const [customBlockerText, setCustomBlockerText] = useState('');
   const [productivityDepth, setProductivityDepth] = useState('');
+  const [customDepthText, setCustomDepthText] = useState('');
   const [saved, setSaved] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -24,7 +26,9 @@ const Index = () => {
       setMentalClarity(existing.mental_clarity);
       setPriorityCompleted(existing.priority_completed);
       setPrimaryBlocker(existing.primary_blocker);
+      setCustomBlockerText(existing.custom_blocker_text || '');
       setProductivityDepth(existing.productivity_depth);
+      setCustomDepthText(existing.custom_work_depth_text || '');
       setSaved(true);
       setIsEditing(false);
     }
@@ -39,7 +43,9 @@ const Index = () => {
       mental_clarity: mentalClarity,
       priority_completed: priorityCompleted!,
       primary_blocker: primaryBlocker,
+      custom_blocker_text: primaryBlocker === 'Other' ? customBlockerText : null,
       productivity_depth: productivityDepth as any,
+      custom_work_depth_text: productivityDepth === 'custom' ? customDepthText : null,
     });
     setSaved(true);
     setIsEditing(false);
@@ -78,6 +84,7 @@ const Index = () => {
         <div className="tracker-card space-y-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <ScoreSlider
             label="Execution Score"
+            description="Measures how effectively you turned priorities into completed results today."
             value={executionScore}
             onChange={setExecutionScore}
             lowLabel="Poor execution"
@@ -86,6 +93,7 @@ const Index = () => {
 
           <ScoreSlider
             label="Mental Clarity"
+            description="Measures how mentally sharp, focused, and cognitively clear you felt today."
             value={mentalClarity}
             onChange={setMentalClarity}
             lowLabel="Foggy / Distracted"
@@ -96,11 +104,21 @@ const Index = () => {
 
           <PriorityToggle value={priorityCompleted} onChange={setPriorityCompleted} />
 
-          <BlockerSelect value={primaryBlocker} onChange={setPrimaryBlocker} />
+          <BlockerSelect
+            value={primaryBlocker}
+            onChange={setPrimaryBlocker}
+            customText={customBlockerText}
+            onCustomTextChange={setCustomBlockerText}
+          />
 
           <div className="border-t border-border" />
 
-          <DepthSelect value={productivityDepth} onChange={setProductivityDepth} />
+          <DepthSelect
+            value={productivityDepth}
+            onChange={setProductivityDepth}
+            customText={customDepthText}
+            onCustomTextChange={setCustomDepthText}
+          />
 
           {/* Submit */}
           {saved && !isEditing ? (
