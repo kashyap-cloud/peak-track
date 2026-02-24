@@ -4,7 +4,9 @@ export interface PerformanceEntry {
   mental_clarity: number;
   priority_completed: boolean;
   primary_blocker: string;
-  productivity_depth: 'surface' | 'focused' | 'deep' | '';
+  custom_blocker_text: string | null;
+  productivity_depth: 'surface' | 'focused' | 'deep' | 'custom' | '';
+  custom_work_depth_text: string | null;
   created_at: string;
 }
 
