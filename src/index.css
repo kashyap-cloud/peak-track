@@ -6,16 +6,16 @@
 
 @layer base {
   :root {
-    --background: 216 18% 96%;
-    --foreground: 220 20% 10%;
+    --background: 220 20% 97%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 10%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 10%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 162 63% 36%;
+    --primary: 160 60% 40%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 14% 94%;
@@ -24,42 +24,47 @@
     --muted: 220 14% 94%;
     --muted-foreground: 220 9% 46%;
 
-    --accent: 162 63% 36%;
+    --accent: 200 80% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 90%;
-    --input: 220 13% 90%;
-    --ring: 162 63% 36%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 160 60% 40%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --chart-1: 162 63% 36%;
-    --chart-2: 200 60% 50%;
+    --chart-1: 160 60% 40%;
+    --chart-2: 200 80% 50%;
     --chart-3: 35 90% 55%;
     --chart-4: 280 60% 55%;
     --chart-5: 0 62% 50%;
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 20% 10%;
-    --sidebar-primary: 162 63% 36%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 160 60% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 14% 94%;
-    --sidebar-accent-foreground: 220 20% 10%;
-    --sidebar-border: 220 13% 90%;
-    --sidebar-ring: 162 63% 36%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 160 60% 40%;
 
     /* Custom tokens */
     --surface-elevated: 0 0% 100%;
-    --success: 162 63% 36%;
-    --success-muted: 162 63% 36% / 0.10;
+    --success: 160 60% 40%;
+    --success-muted: 160 60% 40% / 0.08;
     --warning: 35 90% 45%;
-    --warning-muted: 35 90% 45% / 0.10;
+    --warning-muted: 35 90% 45% / 0.08;
     --danger: 0 62% 50%;
-    --danger-muted: 0 62% 50% / 0.10;
-    --info: 200 60% 45%;
+    --danger-muted: 0 62% 50% / 0.08;
+    --info: 200 80% 50%;
+
+    /* Gradient tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(160 60% 40%), hsl(200 80% 50%));
+    --gradient-warm: linear-gradient(135deg, hsl(35 90% 55%), hsl(15 80% 55%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 20% 98%));
   }
 }
 
@@ -80,31 +85,48 @@
 
 @layer components {
   .tracker-card {
-    @apply bg-card border border-border rounded-lg p-6 shadow-sm;
+    @apply bg-card border border-border rounded-xl p-6 sm:p-8 shadow-lg shadow-black/[0.04];
+    background: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 20% 99%));
   }
 
   .chip {
-    @apply px-3 py-1.5 rounded-md text-sm font-medium border border-border bg-secondary text-secondary-foreground cursor-pointer transition-all duration-150;
+    @apply px-4 py-2 rounded-lg text-sm font-medium border border-border bg-secondary text-secondary-foreground cursor-pointer transition-all duration-200;
+  }
+
+  .chip:hover {
+    @apply border-muted-foreground/40 shadow-sm -translate-y-0.5;
   }
 
   .chip-active {
-    @apply bg-primary text-primary-foreground border-primary;
+    @apply text-primary-foreground border-transparent shadow-md;
+    background: var(--gradient-primary);
   }
 
   .stat-card {
-    @apply bg-card border border-border rounded-lg p-4 shadow-sm;
+    @apply bg-card border border-border rounded-xl p-5 shadow-lg shadow-black/[0.04] transition-all duration-300;
+    background: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 20% 99%));
+  }
+
+  .stat-card:hover {
+    @apply shadow-xl shadow-black/[0.06] -translate-y-0.5;
   }
 
   .slider-track {
-    @apply h-1.5 rounded-full bg-secondary;
+    @apply h-2 rounded-full bg-secondary;
   }
 
   .slider-fill {
-    @apply h-1.5 rounded-full bg-primary transition-all duration-150;
+    @apply h-2 rounded-full transition-all duration-150;
+    background: var(--gradient-primary);
   }
 
   .slider-thumb {
-    @apply w-5 h-5 rounded-full bg-primary border-2 border-card shadow-md cursor-grab active:cursor-grabbing transition-shadow;
+    @apply w-6 h-6 rounded-full border-[3px] border-card shadow-lg cursor-grab active:cursor-grabbing transition-all duration-150;
+    background: var(--gradient-primary);
+  }
+
+  .slider-thumb:hover {
+    @apply scale-110 shadow-xl;
   }
 
   .zone-high {
@@ -117,5 +139,10 @@
 
   .zone-low {
     @apply text-[hsl(var(--danger))];
+  }
+
+  .glass-card {
+    @apply backdrop-blur-sm border border-border/50 rounded-2xl;
+    background: hsl(0 0% 100% / 0.8);
   }
 }
