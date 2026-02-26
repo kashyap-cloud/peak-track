@@ -8,10 +8,10 @@ interface ScoreSliderProps {
   lowLabel: string;
   highLabel: string;
   icon?: ReactNode;
-  gradient?: 'primary' | 'accent';
+  iconClass?: string;
 }
 
-export default function ScoreSlider({ label, description, value, onChange, lowLabel, highLabel, icon, gradient = 'primary' }: ScoreSliderProps) {
+export default function ScoreSlider({ label, description, value, onChange, lowLabel, highLabel, icon, iconClass = 'section-icon-primary' }: ScoreSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -47,28 +47,31 @@ export default function ScoreSlider({ label, description, value, onChange, lowLa
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-2.5">
+        <div className="flex items-start gap-3">
           {icon && (
-            <div className="mt-0.5 p-1.5 rounded-lg bg-primary/10 text-primary">
+            <div className={`section-icon ${iconClass} flex-shrink-0`}>
               {icon}
             </div>
           )}
           <div>
-            <label className="text-sm font-semibold text-foreground">{label}</label>
+            <label className="text-sm font-bold text-foreground">{label}</label>
             {description && (
-              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{description}</p>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed max-w-xs">{description}</p>
             )}
           </div>
         </div>
-        <span className={`font-mono text-3xl font-bold tabular-nums transition-colors duration-200 ${getScoreColor()}`}>
-          {value}
-        </span>
+        <div className="flex flex-col items-end">
+          <span className={`font-mono text-4xl font-extrabold tabular-nums transition-colors duration-300 ${getScoreColor()}`}>
+            {value}
+          </span>
+          <span className="text-[10px] text-muted-foreground font-mono">/10</span>
+        </div>
       </div>
       <div
         ref={trackRef}
-        className="relative h-8 flex items-center cursor-pointer touch-none"
+        className="relative h-9 flex items-center cursor-pointer touch-none group"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -76,11 +79,11 @@ export default function ScoreSlider({ label, description, value, onChange, lowLa
         <div className="slider-track w-full" />
         <div className="slider-fill absolute left-0" style={{ width: `${pct}%` }} />
         <div
-          className={`slider-thumb absolute -translate-x-1/2 transition-transform duration-150 ${isDragging ? 'scale-125 shadow-xl' : ''}`}
+          className={`slider-thumb absolute -translate-x-1/2 transition-transform duration-200 ${isDragging ? 'scale-125' : ''}`}
           style={{ left: `${pct}%` }}
         />
       </div>
-      <div className="flex justify-between text-xs text-muted-foreground">
+      <div className="flex justify-between text-xs text-muted-foreground font-medium">
         <span>{lowLabel}</span>
         <span>{highLabel}</span>
       </div>

@@ -1,5 +1,6 @@
 import { AlertTriangle } from 'lucide-react';
 import { BLOCKERS } from '@/lib/tracker-data';
+import { useTranslation } from '@/lib/translation';
 
 interface BlockerSelectProps {
   value: string;
@@ -9,17 +10,19 @@ interface BlockerSelectProps {
 }
 
 export default function BlockerSelect({ value, onChange, customText, onCustomTextChange }: BlockerSelectProps) {
+  const { t } = useTranslation();
+
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2.5">
-        <div className="p-1.5 rounded-lg bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]">
-          <AlertTriangle className="w-4 h-4" />
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <div className="section-icon section-icon-warning">
+          <AlertTriangle className="w-4 h-4 text-primary-foreground" />
         </div>
-        <label className="text-sm font-semibold text-foreground">
-          What impacted your performance the most?
+        <label className="text-sm font-bold text-foreground">
+          {t('What impacted your performance the most?')}
         </label>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {BLOCKERS.map((blocker) => (
           <button
             key={blocker}
@@ -27,7 +30,7 @@ export default function BlockerSelect({ value, onChange, customText, onCustomTex
             onClick={() => onChange(blocker)}
             className={`chip ${value === blocker ? 'chip-active' : ''}`}
           >
-            {blocker}
+            {t(blocker)}
           </button>
         ))}
         <button
@@ -35,19 +38,19 @@ export default function BlockerSelect({ value, onChange, customText, onCustomTex
           onClick={() => onChange('Other')}
           className={`chip ${value === 'Other' ? 'chip-active' : ''}`}
         >
-          Other
+          {t('Other')}
         </button>
       </div>
       {value === 'Other' && (
-        <div className="space-y-1.5 animate-fade-in">
-          <label className="text-xs text-muted-foreground">Please specify</label>
+        <div className="space-y-2 animate-fade-in">
+          <label className="text-xs text-muted-foreground font-medium">{t('Please specify')}</label>
           <input
             type="text"
             maxLength={150}
             value={customText}
             onChange={(e) => onCustomTextChange(e.target.value)}
-            placeholder="Describe what impacted your performance…"
-            className="w-full px-4 py-2.5 text-sm rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200"
+            placeholder={t('Describe what impacted your performance…')}
+            className="w-full px-4 py-3 text-sm rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200"
           />
         </div>
       )}
