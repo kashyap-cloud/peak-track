@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Activity, ChevronDown, Check, Sparkles, Target, Brain, Zap, TrendingUp } from 'lucide-react';
+import { Activity, ChevronDown, Check, Target, Brain, Zap, TrendingUp, Sparkles } from 'lucide-react';
 import ScoreSlider from '@/components/ScoreSlider';
 import PriorityToggle from '@/components/PriorityToggle';
 import BlockerSelect from '@/components/BlockerSelect';
 import DepthSelect from '@/components/DepthSelect';
 import PerformanceInsights from '@/components/PerformanceInsights';
+import LanguageSelector from '@/components/LanguageSelector';
 import { saveEntry, getTodayEntry } from '@/lib/tracker-data';
+import { useTranslation } from '@/lib/translation';
 
 const Index = () => {
+  const { t } = useTranslation();
   const [executionScore, setExecutionScore] = useState(5);
   const [mentalClarity, setMentalClarity] = useState(5);
   const [priorityCompleted, setPriorityCompleted] = useState<boolean | null>(null);
@@ -56,67 +59,72 @@ const Index = () => {
     setSaved(false);
   };
 
-  const today = new Date().toLocaleDateString('en', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero gradient accent bar */}
-      <div className="h-1.5 w-full" style={{ background: 'var(--gradient-primary)' }} />
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-[400px] opacity-40 pointer-events-none" style={{
+        background: 'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(158 64% 42% / 0.12), transparent), radial-gradient(ellipse 60% 40% at 80% 0%, hsl(205 85% 55% / 0.08), transparent)'
+      }} />
+      <div className="absolute bottom-0 right-0 w-96 h-96 opacity-20 pointer-events-none" style={{
+        background: 'radial-gradient(circle at center, hsl(258 60% 55% / 0.1), transparent)'
+      }} />
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      {/* Top gradient bar */}
+      <div className="h-1 w-full" style={{ background: 'var(--gradient-hero)' }} />
+
+      <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
         <div className="mb-8 animate-fade-in">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 rounded-xl shadow-md" style={{ background: 'var(--gradient-primary)' }}>
-              <Activity className="w-5 h-5 text-primary-foreground" />
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3.5">
+              <div className="section-icon section-icon-primary p-2.5">
+                <Activity className="w-6 h-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight leading-tight">
+                  {t('Performance & Focus Tracker')}
+                </h1>
+                <p className="text-sm text-muted-foreground mt-0.5 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                  {t('Track. Measure. Optimize your daily performance.')}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
-                Performance & Focus Tracker
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Measure how effectively you executed your priorities today.
-              </p>
-            </div>
+            <LanguageSelector />
           </div>
-          <p className="text-xs text-muted-foreground font-mono mt-3 flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3 text-primary" />
-            {today}
-          </p>
         </div>
 
         {/* Form */}
         <div className="tracker-card space-y-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <ScoreSlider
-            label="Execution Score"
-            description="Measures how effectively you turned priorities into completed results today."
+            label={t('Execution Score')}
+            description={t('Measures how effectively you turned priorities into completed results today.')}
             value={executionScore}
             onChange={setExecutionScore}
-            lowLabel="Poor execution"
-            highLabel="Exceptional"
-            icon={<Target className="w-4 h-4" />}
-            gradient="primary"
+            lowLabel={t('Poor execution')}
+            highLabel={t('Exceptional')}
+            icon={<Target className="w-4 h-4 text-primary-foreground" />}
+            iconClass="section-icon-primary"
           />
+
+          <div className="border-t border-border/60" />
 
           <ScoreSlider
-            label="Mental Clarity"
-            description="Measures how mentally sharp, focused, and cognitively clear you felt today."
+            label={t('Mental Clarity')}
+            description={t('Measures how mentally sharp, focused, and cognitively clear you felt today.')}
             value={mentalClarity}
             onChange={setMentalClarity}
-            lowLabel="Foggy / Distracted"
-            highLabel="Sharp / Focused"
-            icon={<Brain className="w-4 h-4" />}
-            gradient="accent"
+            lowLabel={t('Foggy / Distracted')}
+            highLabel={t('Sharp / Focused')}
+            icon={<Brain className="w-4 h-4 text-primary-foreground" />}
+            iconClass="section-icon-accent"
           />
 
-          <div className="border-t border-border" />
+          <div className="border-t border-border/60" />
 
           <PriorityToggle value={priorityCompleted} onChange={setPriorityCompleted} />
+
+          <div className="border-t border-border/60" />
 
           <BlockerSelect
             value={primaryBlocker}
@@ -125,7 +133,7 @@ const Index = () => {
             onCustomTextChange={setCustomBlockerText}
           />
 
-          <div className="border-t border-border" />
+          <div className="border-t border-border/60" />
 
           <DepthSelect
             value={productivityDepth}
@@ -137,44 +145,44 @@ const Index = () => {
           {/* Submit */}
           {saved && !isEditing ? (
             <div className="space-y-3">
-              <div className="flex items-center justify-center gap-2 py-3.5 rounded-xl text-primary-foreground shadow-md" style={{ background: 'var(--gradient-primary)' }}>
-                <Check className="w-4 h-4 animate-check-pop" />
-                <span className="text-sm font-semibold">Entry Saved Successfully</span>
+              <div className="flex items-center justify-center gap-2.5 py-4 rounded-2xl text-primary-foreground shadow-lg shadow-primary/20" style={{ background: 'var(--gradient-primary)' }}>
+                <Check className="w-5 h-5 animate-check-pop" />
+                <span className="text-sm font-bold">{t('Entry Saved Successfully')}</span>
               </div>
               <button
                 onClick={handleEdit}
-                className="w-full py-2.5 text-sm text-muted-foreground hover:text-foreground transition-all duration-200 hover:bg-secondary/50 rounded-lg"
+                className="w-full py-2.5 text-sm text-muted-foreground hover:text-foreground transition-all duration-300 hover:bg-secondary/60 rounded-xl"
               >
-                Edit today's entry
+                {t("Edit today's entry")}
               </button>
             </div>
           ) : (
             <button
               onClick={handleSave}
               disabled={!canSubmit}
-              className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 shadow-md ${
+              className={`w-full py-4 rounded-2xl text-sm font-bold transition-all duration-300 ${
                 canSubmit
-                  ? 'text-primary-foreground hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]'
+                  ? 'text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:scale-[0.98]'
                   : 'bg-muted text-muted-foreground cursor-not-allowed shadow-none'
               }`}
-              style={canSubmit ? { background: 'var(--gradient-primary)' } : undefined}
+              style={canSubmit ? { background: 'var(--gradient-hero)' } : undefined}
             >
               <span className="flex items-center justify-center gap-2">
                 <Zap className="w-4 h-4" />
-                Save Today's Entry
+                {t("Save Today's Entry")}
               </span>
             </button>
           )}
         </div>
 
         {/* Insights Toggle */}
-        <div className="mt-6 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <div className="mt-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
           <button
             onClick={() => setShowInsights(!showInsights)}
-            className="w-full flex items-center justify-center gap-2.5 py-3.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 rounded-xl hover:bg-card hover:shadow-md group"
+            className="w-full flex items-center justify-center gap-2.5 py-4 text-sm font-semibold text-muted-foreground hover:text-foreground transition-all duration-300 rounded-2xl hover:bg-card hover:shadow-lg hover:shadow-black/[0.04] group border border-transparent hover:border-border"
           >
             <TrendingUp className="w-4 h-4 text-primary group-hover:scale-110 transition-transform duration-300" />
-            <span>View Performance Insights</span>
+            <span>{t('View Performance Insights')}</span>
             <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showInsights ? 'rotate-180' : ''}`} />
           </button>
 

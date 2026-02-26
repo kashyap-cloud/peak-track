@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, Cell, CartesianGrid, Area, AreaChart } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, Cell, CartesianGrid } from 'recharts';
 import { TrendingUp, Brain, Shield, BarChart3 } from 'lucide-react';
 import { getLast7Days, getLast14Days, getConsistencyZone } from '@/lib/tracker-data';
+import { useTranslation } from '@/lib/translation';
 
 export default function PerformanceInsights() {
+  const { t } = useTranslation();
   const last7 = getLast7Days();
   const last14 = getLast14Days();
 
@@ -45,36 +47,36 @@ export default function PerformanceInsights() {
 
   if (totalEntries < 3) {
     return (
-      <div className="stat-card text-center py-10">
-        <div className="p-3 rounded-2xl bg-primary/10 text-primary mx-auto w-fit mb-4">
-          <BarChart3 className="w-8 h-8" />
+      <div className="stat-card text-center py-12">
+        <div className="section-icon section-icon-primary mx-auto w-fit p-3 mb-4">
+          <BarChart3 className="w-7 h-7 text-primary-foreground" />
         </div>
-        <p className="text-sm text-muted-foreground">
-          Log at least 3 days to see performance insights.
+        <p className="text-sm text-muted-foreground font-medium">
+          {t('Log at least 3 days to see performance insights.')}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       {/* 7-Day Trend */}
       <div className="stat-card">
-        <div className="flex items-center gap-2.5 mb-4">
-          <div className="p-1.5 rounded-lg" style={{ background: 'var(--gradient-primary)' }}>
+        <div className="flex items-center gap-2.5 mb-5">
+          <div className="section-icon section-icon-primary">
             <TrendingUp className="w-4 h-4 text-primary-foreground" />
           </div>
-          <h3 className="text-sm font-semibold text-foreground">7-Day Execution Trend</h3>
+          <h3 className="text-sm font-bold text-foreground">{t('7-Day Execution Trend')}</h3>
         </div>
-        <ResponsiveContainer width="100%" height={180}>
+        <ResponsiveContainer width="100%" height={200}>
           <AreaChart data={trendData}>
             <defs>
               <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(160 60% 40%)" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="hsl(160 60% 40%)" stopOpacity={0} />
+                <stop offset="5%" stopColor="hsl(158 64% 42%)" stopOpacity={0.25} />
+                <stop offset="95%" stopColor="hsl(158 64% 42%)" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 13% 91%)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 16% 92%)" />
             <XAxis
               dataKey="date"
               tick={{ fill: 'hsl(220 9% 46%)', fontSize: 11, fontFamily: 'JetBrains Mono' }}
@@ -91,22 +93,22 @@ export default function PerformanceInsights() {
             <Tooltip
               contentStyle={{
                 background: 'hsl(0 0% 100%)',
-                border: '1px solid hsl(220 13% 91%)',
+                border: '1px solid hsl(220 16% 90%)',
                 borderRadius: '12px',
                 fontSize: '12px',
                 fontFamily: 'JetBrains Mono',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
               }}
               labelStyle={{ color: 'hsl(220 9% 46%)' }}
             />
             <Area
               type="monotone"
               dataKey="score"
-              stroke="hsl(160 60% 40%)"
-              strokeWidth={2.5}
+              stroke="hsl(158 64% 42%)"
+              strokeWidth={3}
               fill="url(#scoreGradient)"
-              dot={{ fill: 'hsl(160 60% 40%)', r: 4, strokeWidth: 2, stroke: '#fff' }}
-              activeDot={{ r: 6, fill: 'hsl(160 60% 40%)', stroke: '#fff', strokeWidth: 2 }}
+              dot={{ fill: 'hsl(158 64% 42%)', r: 5, strokeWidth: 3, stroke: '#fff' }}
+              activeDot={{ r: 7, fill: 'hsl(158 64% 42%)', stroke: '#fff', strokeWidth: 3 }}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -117,14 +119,14 @@ export default function PerformanceInsights() {
         {correlation && (
           <div className="stat-card">
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="p-1.5 rounded-lg bg-[hsl(var(--info))]/10">
-                <Brain className="w-4 h-4 text-[hsl(var(--info))]" />
+              <div className="section-icon section-icon-accent">
+                <Brain className="w-4 h-4 text-primary-foreground" />
               </div>
-              <h3 className="text-sm font-semibold text-foreground">Focus × Execution</h3>
+              <h3 className="text-sm font-bold text-foreground">{t('Focus × Execution')}</h3>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
               On days your Mental Clarity is above 7, your Execution improves by{' '}
-              <span className="font-mono font-bold text-primary text-base">{correlation}%</span>.
+              <span className="font-mono font-extrabold text-primary text-lg">{correlation}%</span>.
             </p>
           </div>
         )}
@@ -132,16 +134,16 @@ export default function PerformanceInsights() {
         {consistency && (
           <div className="stat-card">
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="p-1.5 rounded-lg bg-[hsl(var(--warning))]/10">
-                <Shield className="w-4 h-4 text-[hsl(var(--warning))]" />
+              <div className="section-icon section-icon-warning">
+                <Shield className="w-4 h-4 text-primary-foreground" />
               </div>
-              <h3 className="text-sm font-semibold text-foreground">Consistency Score</h3>
+              <h3 className="text-sm font-bold text-foreground">{t('Consistency Score')}</h3>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="font-mono text-4xl font-bold text-foreground">{consistency.avg}</span>
-              <span className="text-sm text-muted-foreground">/10</span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-mono text-4xl font-extrabold text-foreground">{consistency.avg}</span>
+              <span className="text-sm text-muted-foreground font-mono">/10</span>
             </div>
-            <p className={`text-xs font-semibold mt-1.5 ${
+            <p className={`text-xs font-bold mt-2 ${
               consistency.zone === 'high' ? 'zone-high' :
               consistency.zone === 'moderate' ? 'zone-moderate' : 'zone-low'
             }`}>
@@ -154,11 +156,11 @@ export default function PerformanceInsights() {
       {/* Blocker Frequency */}
       {blockerData.length > 0 && (
         <div className="stat-card">
-          <div className="flex items-center gap-2.5 mb-4">
-            <div className="p-1.5 rounded-lg bg-[hsl(var(--warning))]/10">
-              <BarChart3 className="w-4 h-4 text-[hsl(var(--warning))]" />
+          <div className="flex items-center gap-2.5 mb-5">
+            <div className="section-icon section-icon-warning">
+              <BarChart3 className="w-4 h-4 text-primary-foreground" />
             </div>
-            <h3 className="text-sm font-semibold text-foreground">Blocker Frequency (14 Days)</h3>
+            <h3 className="text-sm font-bold text-foreground">{t('Blocker Frequency (14 Days)')}</h3>
           </div>
           <ResponsiveContainer width="100%" height={140}>
             <BarChart data={blockerData} layout="vertical">
@@ -171,9 +173,9 @@ export default function PerformanceInsights() {
                 tickLine={false}
                 width={120}
               />
-              <Bar dataKey="count" radius={[0, 8, 8, 0]} maxBarSize={20}>
+              <Bar dataKey="count" radius={[0, 10, 10, 0]} maxBarSize={22}>
                 {blockerData.map((_, i) => (
-                  <Cell key={i} fill={i === 0 ? 'hsl(35 90% 55%)' : 'hsl(220 14% 88%)'} />
+                  <Cell key={i} fill={i === 0 ? 'hsl(35 92% 55%)' : 'hsl(220 16% 88%)'} />
                 ))}
               </Bar>
             </BarChart>
