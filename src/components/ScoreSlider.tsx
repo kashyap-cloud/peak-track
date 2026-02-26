@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, ReactNode } from 'react';
 
 interface ScoreSliderProps {
   label: string;
@@ -7,9 +7,11 @@ interface ScoreSliderProps {
   onChange: (value: number) => void;
   lowLabel: string;
   highLabel: string;
+  icon?: ReactNode;
+  gradient?: 'primary' | 'accent';
 }
 
-export default function ScoreSlider({ label, description, value, onChange, lowLabel, highLabel }: ScoreSliderProps) {
+export default function ScoreSlider({ label, description, value, onChange, lowLabel, highLabel, icon, gradient = 'primary' }: ScoreSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -38,22 +40,35 @@ export default function ScoreSlider({ label, description, value, onChange, lowLa
 
   const pct = ((value - 1) / 9) * 100;
 
+  const getScoreColor = () => {
+    if (value >= 8) return 'text-primary';
+    if (value >= 5) return 'text-[hsl(var(--warning))]';
+    return 'text-[hsl(var(--danger))]';
+  };
+
   return (
     <div className="space-y-3">
-      <div className="flex items-baseline justify-between">
-        <div>
-          <label className="text-sm font-medium text-foreground">{label}</label>
-          {description && (
-            <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-2.5">
+          {icon && (
+            <div className="mt-0.5 p-1.5 rounded-lg bg-primary/10 text-primary">
+              {icon}
+            </div>
           )}
+          <div>
+            <label className="text-sm font-semibold text-foreground">{label}</label>
+            {description && (
+              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{description}</p>
+            )}
+          </div>
         </div>
-        <span className="font-mono text-2xl font-semibold text-primary tabular-nums">
+        <span className={`font-mono text-3xl font-bold tabular-nums transition-colors duration-200 ${getScoreColor()}`}>
           {value}
         </span>
       </div>
       <div
         ref={trackRef}
-        className="relative h-6 flex items-center cursor-pointer touch-none"
+        className="relative h-8 flex items-center cursor-pointer touch-none"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -61,7 +76,7 @@ export default function ScoreSlider({ label, description, value, onChange, lowLa
         <div className="slider-track w-full" />
         <div className="slider-fill absolute left-0" style={{ width: `${pct}%` }} />
         <div
-          className={`slider-thumb absolute -translate-x-1/2 ${isDragging ? 'scale-110' : ''}`}
+          className={`slider-thumb absolute -translate-x-1/2 transition-transform duration-150 ${isDragging ? 'scale-125 shadow-xl' : ''}`}
           style={{ left: `${pct}%` }}
         />
       </div>

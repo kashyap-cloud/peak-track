@@ -1,3 +1,4 @@
+import { AlertTriangle } from 'lucide-react';
 import { BLOCKERS } from '@/lib/tracker-data';
 
 interface BlockerSelectProps {
@@ -10,16 +11,21 @@ interface BlockerSelectProps {
 export default function BlockerSelect({ value, onChange, customText, onCustomTextChange }: BlockerSelectProps) {
   return (
     <div className="space-y-3">
-      <label className="text-sm font-medium text-foreground">
-        What impacted your performance the most?
-      </label>
+      <div className="flex items-center gap-2.5">
+        <div className="p-1.5 rounded-lg bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]">
+          <AlertTriangle className="w-4 h-4" />
+        </div>
+        <label className="text-sm font-semibold text-foreground">
+          What impacted your performance the most?
+        </label>
+      </div>
       <div className="flex flex-wrap gap-2">
         {BLOCKERS.map((blocker) => (
           <button
             key={blocker}
             type="button"
             onClick={() => onChange(blocker)}
-            className={`chip ${value === blocker ? 'chip-active' : 'hover:border-muted-foreground/40'}`}
+            className={`chip ${value === blocker ? 'chip-active' : ''}`}
           >
             {blocker}
           </button>
@@ -27,7 +33,7 @@ export default function BlockerSelect({ value, onChange, customText, onCustomTex
         <button
           type="button"
           onClick={() => onChange('Other')}
-          className={`chip ${value === 'Other' ? 'chip-active' : 'hover:border-muted-foreground/40'}`}
+          className={`chip ${value === 'Other' ? 'chip-active' : ''}`}
         >
           Other
         </button>
@@ -41,7 +47,7 @@ export default function BlockerSelect({ value, onChange, customText, onCustomTex
             value={customText}
             onChange={(e) => onCustomTextChange(e.target.value)}
             placeholder="Describe what impacted your performance…"
-            className="w-full px-3 py-2 text-sm rounded-md border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full px-4 py-2.5 text-sm rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200"
           />
         </div>
       )}
