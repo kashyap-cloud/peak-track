@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Activity, ChevronDown, Check, Target, Brain, Zap, TrendingUp, History } from 'lucide-react';
 import ScoreSlider from '@/components/ScoreSlider';
 import PriorityToggle from '@/components/PriorityToggle';
@@ -22,22 +22,6 @@ const Index = () => {
   const [saved, setSaved] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-
-  useEffect(() => {
-    const existing = getTodayEntry();
-    if (existing) {
-      setExecutionScore(existing.execution_score);
-      setMentalClarity(existing.mental_clarity);
-      setPriorityCompleted(existing.priority_completed);
-      setPrimaryBlocker(existing.primary_blocker);
-      setCustomBlockerText(existing.custom_blocker_text || '');
-      setProductivityDepth(existing.productivity_depth);
-      setCustomDepthText(existing.custom_work_depth_text || '');
-      setSaved(true);
-      setIsEditing(false);
-    }
-  }, []);
 
   const canSubmit = priorityCompleted !== null && primaryBlocker !== '';
 
@@ -52,24 +36,16 @@ const Index = () => {
       productivity_depth: productivityDepth as any,
       custom_work_depth_text: productivityDepth === 'custom' ? customDepthText : null,
     });
+    // Show saved confirmation, then reset everything
     setSaved(true);
-    setIsEditing(false);
-    // Reset form to defaults after a brief delay
-    setTimeout(() => {
-      setExecutionScore(5);
-      setMentalClarity(5);
-      setPriorityCompleted(null);
-      setPrimaryBlocker('');
-      setCustomBlockerText('');
-      setProductivityDepth('');
-      setCustomDepthText('');
-      setSaved(false);
-    }, 1200);
-  };
-
-  const handleEdit = () => {
-    setIsEditing(true);
-    setSaved(false);
+    setExecutionScore(5);
+    setMentalClarity(5);
+    setPriorityCompleted(null);
+    setPrimaryBlocker('');
+    setCustomBlockerText('');
+    setProductivityDepth('');
+    setCustomDepthText('');
+    setTimeout(() => setSaved(false), 1500);
   };
 
   return (
@@ -155,20 +131,13 @@ const Index = () => {
           />
 
           {/* Submit */}
-          {saved && !isEditing ? (
-            <div className="space-y-3">
-              <div className="flex items-center justify-center gap-2.5 py-4 rounded-2xl text-primary-foreground shadow-lg shadow-primary/20" style={{ background: 'var(--gradient-primary)' }}>
-                <Check className="w-5 h-5 animate-check-pop" />
-                <span className="text-sm font-bold">{t('Entry Saved Successfully')}</span>
-              </div>
-              <button
-                onClick={handleEdit}
-                className="w-full py-2.5 text-sm text-muted-foreground hover:text-foreground transition-all duration-300 hover:bg-secondary/60 rounded-xl"
-              >
-                {t("Edit today's entry")}
-              </button>
+          {saved && (
+            <div className="flex items-center justify-center gap-2.5 py-4 rounded-2xl text-primary-foreground shadow-lg shadow-primary/20 animate-fade-in" style={{ background: 'var(--gradient-primary)' }}>
+              <Check className="w-5 h-5" />
+              <span className="text-sm font-bold">{t('Entry Saved Successfully')}</span>
             </div>
-          ) : (
+          )}
+          {!saved && (
             <button
               onClick={handleSave}
               disabled={!canSubmit}
