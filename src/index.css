@@ -105,8 +105,11 @@
     background: var(--gradient-primary);
   }
 
-  .chip-active:hover {
-    @apply text-primary-foreground;
+  .chip-active,
+  .chip-active:hover,
+  .chip-active:focus {
+    @apply text-primary-foreground border-transparent shadow-lg shadow-primary/20;
+    background: var(--gradient-primary) !important;
   }
 
   .stat-card {

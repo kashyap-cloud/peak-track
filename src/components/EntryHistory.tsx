@@ -19,6 +19,11 @@ export default function EntryHistory() {
     return found ? found.label : depth;
   };
 
+  const getDepthDescription = (depth: string) => {
+    const found = DEPTH_OPTIONS.find(d => d.value === depth);
+    return found ? found.description : '';
+  };
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr + 'T00:00:00');
     return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
@@ -53,27 +58,44 @@ export default function EntryHistory() {
           </div>
 
           {/* Details row */}
-          <div className="flex flex-wrap gap-2">
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${
-              entry.priority_completed 
-                ? 'bg-primary/10 text-primary' 
-                : 'bg-destructive/10 text-destructive'
-            }`}>
-              {entry.priority_completed ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
-              {entry.priority_completed ? t('Priority Completed') : t('Priority Not Completed')}
-            </span>
+          <div className="space-y-2">
+            <div className="flex flex-wrap gap-2">
+              {/* Priority */}
+              <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                entry.priority_completed 
+                  ? 'bg-primary/10 text-primary' 
+                  : 'bg-destructive/10 text-destructive'
+              }`}>
+                {entry.priority_completed ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
+                <span>
+                  <span className="text-muted-foreground font-normal">{t('Top Priority:')}</span>{' '}
+                  {entry.priority_completed ? t('Completed') : t('Not Completed')}
+                </span>
+              </div>
 
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-warning/10 text-[hsl(var(--warning))]">
-              <AlertTriangle className="w-3.5 h-3.5" />
-              {t(entry.primary_blocker)}{entry.custom_blocker_text ? `: ${entry.custom_blocker_text}` : ''}
-            </span>
+              {/* Blocker */}
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-warning/10 text-[hsl(var(--warning))]">
+                <AlertTriangle className="w-3.5 h-3.5" />
+                <span>
+                  <span className="text-muted-foreground font-normal">{t('Blocker:')}</span>{' '}
+                  {t(entry.primary_blocker)}{entry.custom_blocker_text ? ` — ${entry.custom_blocker_text}` : ''}
+                </span>
+              </div>
 
-            {entry.productivity_depth && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-accent/10 text-accent">
-                <Layers className="w-3.5 h-3.5" />
-                {entry.productivity_depth === 'custom' ? entry.custom_work_depth_text : t(getDepthLabel(entry.productivity_depth))}
-              </span>
-            )}
+              {/* Depth */}
+              {entry.productivity_depth && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-accent/10 text-accent">
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>
+                    <span className="text-muted-foreground font-normal">{t('Work Depth:')}</span>{' '}
+                    {entry.productivity_depth === 'custom' 
+                      ? entry.custom_work_depth_text 
+                      : `${t(getDepthLabel(entry.productivity_depth))} — ${t(getDepthDescription(entry.productivity_depth))}`
+                    }
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       ))}

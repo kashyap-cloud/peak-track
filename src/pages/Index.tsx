@@ -64,7 +64,7 @@ const Index = () => {
       setProductivityDepth('');
       setCustomDepthText('');
       setSaved(false);
-    }, 2000);
+    }, 1200);
   };
 
   const handleEdit = () => {
