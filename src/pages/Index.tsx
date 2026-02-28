@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Activity, ChevronDown, Check, Target, Brain, Zap, TrendingUp, Sparkles } from 'lucide-react';
+import { Activity, ChevronDown, Check, Target, Brain, Zap, TrendingUp, History } from 'lucide-react';
 import ScoreSlider from '@/components/ScoreSlider';
 import PriorityToggle from '@/components/PriorityToggle';
 import BlockerSelect from '@/components/BlockerSelect';
 import DepthSelect from '@/components/DepthSelect';
 import PerformanceInsights from '@/components/PerformanceInsights';
+import EntryHistory from '@/components/EntryHistory';
 import LanguageSelector from '@/components/LanguageSelector';
 import { saveEntry, getTodayEntry } from '@/lib/tracker-data';
 import { useTranslation } from '@/lib/translation';
@@ -20,6 +21,7 @@ const Index = () => {
   const [customDepthText, setCustomDepthText] = useState('');
   const [saved, setSaved] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
@@ -52,6 +54,17 @@ const Index = () => {
     });
     setSaved(true);
     setIsEditing(false);
+    // Reset form to defaults after a brief delay
+    setTimeout(() => {
+      setExecutionScore(5);
+      setMentalClarity(5);
+      setPriorityCompleted(null);
+      setPrimaryBlocker('');
+      setCustomBlockerText('');
+      setProductivityDepth('');
+      setCustomDepthText('');
+      setSaved(false);
+    }, 2000);
   };
 
   const handleEdit = () => {
@@ -84,10 +97,9 @@ const Index = () => {
                 <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight leading-tight">
                   {t('Performance & Focus Tracker')}
                 </h1>
-                <p className="text-sm text-muted-foreground mt-0.5 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-primary" />
-                  {t('Track. Measure. Optimize your daily performance.')}
-                </p>
+               <p className="text-sm text-muted-foreground mt-0.5">
+                   {t('Track. Measure. Optimize your daily performance.')}
+                 </p>
               </div>
             </div>
             <LanguageSelector />
@@ -167,21 +179,19 @@ const Index = () => {
               }`}
               style={canSubmit ? { background: 'var(--gradient-hero)' } : undefined}
             >
-              <span className="flex items-center justify-center gap-2">
-                <Zap className="w-4 h-4" />
-                {t("Save Today's Entry")}
-              </span>
+              {t("Save Today's Entry")}
             </button>
           )}
         </div>
 
-        {/* Insights Toggle */}
-        <div className="mt-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        {/* Action Buttons */}
+        <div className="mt-8 space-y-3 animate-fade-in" style={{ animationDelay: '0.2s' }}>
           <button
             onClick={() => setShowInsights(!showInsights)}
-            className="w-full flex items-center justify-center gap-2.5 py-4 text-sm font-semibold text-muted-foreground hover:text-foreground transition-all duration-300 rounded-2xl hover:bg-card hover:shadow-lg hover:shadow-black/[0.04] group border border-transparent hover:border-border"
+            className="w-full flex items-center justify-center gap-2.5 py-4 text-sm font-bold text-primary-foreground transition-all duration-300 rounded-2xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:scale-[0.98]"
+            style={{ background: 'var(--gradient-primary)' }}
           >
-            <TrendingUp className="w-4 h-4 text-primary group-hover:scale-110 transition-transform duration-300" />
+            <TrendingUp className="w-4.5 h-4.5" />
             <span>{t('View Performance Insights')}</span>
             <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showInsights ? 'rotate-180' : ''}`} />
           </button>
@@ -189,6 +199,22 @@ const Index = () => {
           {showInsights && (
             <div className="mt-4">
               <PerformanceInsights />
+            </div>
+          )}
+
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="w-full flex items-center justify-center gap-2.5 py-4 text-sm font-bold text-primary-foreground transition-all duration-300 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]"
+            style={{ background: 'var(--gradient-purple)' }}
+          >
+            <History className="w-4.5 h-4.5" />
+            <span>{t('View Entry History')}</span>
+            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showHistory ? 'rotate-180' : ''}`} />
+          </button>
+
+          {showHistory && (
+            <div className="mt-4">
+              <EntryHistory />
             </div>
           )}
         </div>

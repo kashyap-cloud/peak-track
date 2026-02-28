@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext, useContext, useCallback, ReactNode } from 'react';
 
+// This key is intentionally client-side as it's a restricted/publishable Google Translate API key
 const GOOGLE_TRANSLATE_API_KEY = 'AIzaSyDgyWwwmHOROsPZclCm-LGzZs_uoYNhVDk';
 
 interface Language {
