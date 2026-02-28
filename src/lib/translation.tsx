@@ -1,8 +1,5 @@
 import { useState, useEffect, createContext, useContext, useCallback, ReactNode } from 'react';
 
-// This key is intentionally client-side as it's a restricted/publishable Google Translate API key
-const GOOGLE_TRANSLATE_API_KEY = 'AIzaSyDgyWwwmHOROsPZclCm-LGzZs_uoYNhVDk';
-
 interface Language {
   code: string;
   name: string;
@@ -12,7 +9,6 @@ interface TranslationContextType {
   currentLang: string;
   setCurrentLang: (lang: string) => void;
   languages: Language[];
-  translate: (text: string) => Promise<string>;
   t: (text: string) => string;
   isLoading: boolean;
 }
@@ -25,39 +21,87 @@ export function useTranslation() {
   return ctx;
 }
 
-// Cache translations to avoid repeated API calls
-const translationCache: Record<string, Record<string, string>> = {};
+// Static list of common languages (no API key needed)
+const LANGUAGES: Language[] = [
+  { code: 'en', name: 'English' },
+  { code: 'fr', name: 'French' },
+  { code: 'es', name: 'Spanish' },
+  { code: 'de', name: 'German' },
+  { code: 'it', name: 'Italian' },
+  { code: 'pt', name: 'Portuguese' },
+  { code: 'ru', name: 'Russian' },
+  { code: 'ja', name: 'Japanese' },
+  { code: 'ko', name: 'Korean' },
+  { code: 'zh', name: 'Chinese' },
+  { code: 'ar', name: 'Arabic' },
+  { code: 'hi', name: 'Hindi' },
+  { code: 'bn', name: 'Bengali' },
+  { code: 'tr', name: 'Turkish' },
+  { code: 'nl', name: 'Dutch' },
+  { code: 'pl', name: 'Polish' },
+  { code: 'sv', name: 'Swedish' },
+  { code: 'da', name: 'Danish' },
+  { code: 'fi', name: 'Finnish' },
+  { code: 'no', name: 'Norwegian' },
+  { code: 'th', name: 'Thai' },
+  { code: 'vi', name: 'Vietnamese' },
+  { code: 'id', name: 'Indonesian' },
+  { code: 'ms', name: 'Malay' },
+  { code: 'uk', name: 'Ukrainian' },
+  { code: 'cs', name: 'Czech' },
+  { code: 'ro', name: 'Romanian' },
+  { code: 'hu', name: 'Hungarian' },
+  { code: 'el', name: 'Greek' },
+  { code: 'he', name: 'Hebrew' },
+  { code: 'ta', name: 'Tamil' },
+  { code: 'te', name: 'Telugu' },
+  { code: 'ur', name: 'Urdu' },
+  { code: 'fa', name: 'Persian' },
+  { code: 'sw', name: 'Swahili' },
+  { code: 'fil', name: 'Filipino' },
+  { code: 'bg', name: 'Bulgarian' },
+  { code: 'hr', name: 'Croatian' },
+  { code: 'sk', name: 'Slovak' },
+  { code: 'sl', name: 'Slovenian' },
+  { code: 'lt', name: 'Lithuanian' },
+  { code: 'lv', name: 'Latvian' },
+  { code: 'et', name: 'Estonian' },
+  { code: 'ca', name: 'Catalan' },
+  { code: 'sr', name: 'Serbian' },
+  { code: 'mk', name: 'Macedonian' },
+  { code: 'sq', name: 'Albanian' },
+  { code: 'ka', name: 'Georgian' },
+  { code: 'hy', name: 'Armenian' },
+  { code: 'az', name: 'Azerbaijani' },
+  { code: 'kk', name: 'Kazakh' },
+  { code: 'uz', name: 'Uzbek' },
+  { code: 'mn', name: 'Mongolian' },
+  { code: 'ne', name: 'Nepali' },
+  { code: 'si', name: 'Sinhala' },
+  { code: 'km', name: 'Khmer' },
+  { code: 'lo', name: 'Lao' },
+  { code: 'my', name: 'Burmese' },
+  { code: 'am', name: 'Amharic' },
+  { code: 'zu', name: 'Zulu' },
+  { code: 'yo', name: 'Yoruba' },
+  { code: 'ig', name: 'Igbo' },
+  { code: 'ha', name: 'Hausa' },
+  { code: 'ga', name: 'Irish' },
+  { code: 'cy', name: 'Welsh' },
+  { code: 'eu', name: 'Basque' },
+  { code: 'gl', name: 'Galician' },
+  { code: 'mt', name: 'Maltese' },
+  { code: 'is', name: 'Icelandic' },
+  { code: 'af', name: 'Afrikaans' },
+  { code: 'mr', name: 'Marathi' },
+  { code: 'gu', name: 'Gujarati' },
+  { code: 'kn', name: 'Kannada' },
+  { code: 'ml', name: 'Malayalam' },
+  { code: 'pa', name: 'Punjabi' },
+];
 
 export function TranslationProvider({ children }: { children: ReactNode }) {
   const [currentLang, setCurrentLangState] = useState('en');
-  const [languages, setLanguages] = useState<Language[]>([
-    { code: 'en', name: 'English' },
-  ]);
-  const [translatedTexts, setTranslatedTexts] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Load languages from Google API
-  useEffect(() => {
-    async function fetchLanguages() {
-      try {
-        const res = await fetch(
-          `https://translation.googleapis.com/language/translate/v2/languages?key=${GOOGLE_TRANSLATE_API_KEY}&target=en`
-        );
-        const data = await res.json();
-        if (data.data?.languages) {
-          const langs: Language[] = data.data.languages.map((l: any) => ({
-            code: l.language,
-            name: l.name || l.language,
-          }));
-          langs.sort((a, b) => a.name.localeCompare(b.name));
-          setLanguages(langs);
-        }
-      } catch (err) {
-        console.error('Failed to fetch languages:', err);
-      }
-    }
-    fetchLanguages();
-  }, []);
 
   // Check URL param on mount
   useEffect(() => {
@@ -70,7 +114,6 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
 
   const setCurrentLang = useCallback((lang: string) => {
     setCurrentLangState(lang);
-    // Update URL
     const url = new URL(window.location.href);
     if (lang === 'en') {
       url.searchParams.delete('lang');
@@ -80,146 +123,14 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     window.history.replaceState({}, '', url.toString());
   }, []);
 
-  const translate = useCallback(async (text: string): Promise<string> => {
-    if (currentLang === 'en') return text;
-    
-    // Check cache
-    if (translationCache[currentLang]?.[text]) {
-      return translationCache[currentLang][text];
-    }
-
-    try {
-      const res = await fetch(
-        `https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            q: text,
-            target: currentLang,
-            source: 'en',
-          }),
-        }
-      );
-      const data = await res.json();
-      const translated = data.data?.translations?.[0]?.translatedText || text;
-      
-      // Cache it
-      if (!translationCache[currentLang]) translationCache[currentLang] = {};
-      translationCache[currentLang][text] = translated;
-      
-      return translated;
-    } catch {
-      return text;
-    }
-  }, [currentLang]);
-
-  // Batch translate UI strings when language changes
-  useEffect(() => {
-    if (currentLang === 'en') {
-      setTranslatedTexts({});
-      return;
-    }
-
-    const uiStrings = [
-      'Performance & Focus Tracker',
-      'Track. Measure. Optimize your daily performance.',
-      'Execution Score',
-      'Measures how effectively you turned priorities into completed results today.',
-      'Mental Clarity',
-      'Measures how mentally sharp, focused, and cognitively clear you felt today.',
-      'Poor execution',
-      'Exceptional',
-      'Foggy / Distracted',
-      'Sharp / Focused',
-      'Did you complete your most important task today?',
-      'Yes',
-      'No',
-      'What impacted your performance the most?',
-      'Distraction',
-      'Emotional State',
-      'Lack of Clarity',
-      'External Dependency',
-      'Low Energy',
-      'No Major Blocker',
-      'Other',
-      'Please specify',
-      'Describe what impacted your performance…',
-      'How deep was your work today?',
-      'Optional',
-      'Surface-Level Tasks',
-      'Admin, emails, quick tasks',
-      'Focused Work',
-      'Structured, goal-oriented work',
-      'Deep Work',
-      'High-intensity, creative work',
-      'Custom',
-      'Describe your own work depth',
-      'Describe your work depth',
-      'Example: Strategy planning, creative brainstorming…',
-      'Save Today\'s Entry',
-      'Entry Saved Successfully',
-      'Edit today\'s entry',
-      'View Performance Insights',
-      'Log at least 3 days to see performance insights.',
-      '7-Day Execution Trend',
-      'Focus × Execution',
-      'Consistency Score',
-      'Blocker Frequency (14 Days)',
-    ];
-
-    // Check if all are cached
-    const allCached = uiStrings.every(s => translationCache[currentLang]?.[s]);
-    if (allCached) {
-      const map: Record<string, string> = {};
-      uiStrings.forEach(s => { map[s] = translationCache[currentLang][s]; });
-      setTranslatedTexts(map);
-      return;
-    }
-
-    setIsLoading(true);
-
-    async function batchTranslate() {
-      try {
-        const res = await fetch(
-          `https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              q: uiStrings,
-              target: currentLang,
-              source: 'en',
-            }),
-          }
-        );
-        const data = await res.json();
-        const translations = data.data?.translations || [];
-        const map: Record<string, string> = {};
-        if (!translationCache[currentLang]) translationCache[currentLang] = {};
-        uiStrings.forEach((s, i) => {
-          const translated = translations[i]?.translatedText || s;
-          map[s] = translated;
-          translationCache[currentLang][s] = translated;
-        });
-        setTranslatedTexts(map);
-      } catch {
-        // fallback to english
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    batchTranslate();
-  }, [currentLang]);
-
+  // Without an API key, t() just returns the English text.
+  // To enable actual translation, integrate a translation API via Lovable Cloud.
   const t = useCallback((text: string): string => {
-    if (currentLang === 'en') return text;
-    return translatedTexts[text] || text;
-  }, [currentLang, translatedTexts]);
+    return text;
+  }, []);
 
   return (
-    <TranslationContext.Provider value={{ currentLang, setCurrentLang, languages, translate, t, isLoading }}>
+    <TranslationContext.Provider value={{ currentLang, setCurrentLang, languages: LANGUAGES, t, isLoading: false }}>
       {children}
     </TranslationContext.Provider>
   );

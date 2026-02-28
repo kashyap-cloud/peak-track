@@ -22,7 +22,7 @@ export default function BlockerSelect({ value, onChange, customText, onCustomTex
           {t('What impacted your performance the most?')}
         </label>
       </div>
-      <div className="flex flex-wrap gap-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         {BLOCKERS.map((blocker) => (
           <button
             key={blocker}
