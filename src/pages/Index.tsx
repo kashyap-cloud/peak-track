@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, ChevronDown, Check, Target, Brain, TrendingUp, History, Pencil } from 'lucide-react';
+import { Activity, ChevronDown, Check, Target, Brain, TrendingUp, History, ClipboardCheck } from 'lucide-react';
 import ScoreSlider from '@/components/ScoreSlider';
 import PriorityToggle from '@/components/PriorityToggle';
 import BlockerSelect from '@/components/BlockerSelect';
