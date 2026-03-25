@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, ChevronDown, Check, Target, Brain, Zap, TrendingUp, History } from 'lucide-react';
+import { Activity, ChevronDown, Check, Target, Brain, Zap, TrendingUp, History, Pencil } from 'lucide-react';
 import ScoreSlider from '@/components/ScoreSlider';
 import PriorityToggle from '@/components/PriorityToggle';
 import BlockerSelect from '@/components/BlockerSelect';
@@ -7,7 +7,7 @@ import DepthSelect from '@/components/DepthSelect';
 import PerformanceInsights from '@/components/PerformanceInsights';
 import EntryHistory from '@/components/EntryHistory';
 import LanguageSelector from '@/components/LanguageSelector';
-import { saveEntry, getTodayEntry } from '@/lib/tracker-data';
+import { saveEntry } from '@/lib/tracker-data';
 import { useTranslation } from '@/lib/translation';
 
 const Index = () => {
@@ -36,7 +36,6 @@ const Index = () => {
       productivity_depth: productivityDepth as any,
       custom_work_depth_text: productivityDepth === 'custom' ? customDepthText : null,
     });
-    // Show saved confirmation, then reset everything
     setSaved(true);
     setExecutionScore(5);
     setMentalClarity(5);
@@ -50,40 +49,46 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-[400px] opacity-40 pointer-events-none" style={{
-        background: 'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(158 64% 42% / 0.12), transparent), radial-gradient(ellipse 60% 40% at 80% 0%, hsl(205 85% 55% / 0.08), transparent)'
-      }} />
-      <div className="absolute bottom-0 right-0 w-96 h-96 opacity-20 pointer-events-none" style={{
-        background: 'radial-gradient(circle at center, hsl(258 60% 55% / 0.1), transparent)'
-      }} />
+      {/* Hero Header */}
+      <div className="w-full py-10 sm:py-14 text-center relative overflow-hidden" style={{
+        background: 'linear-gradient(160deg, hsl(158 64% 92%), hsl(180 50% 94%), hsl(205 70% 93%))'
+      }}>
+        <div className="absolute inset-0 opacity-30" style={{
+          background: 'radial-gradient(ellipse 60% 80% at 50% 0%, hsl(158 64% 42% / 0.15), transparent)'
+        }} />
+        <div className="relative max-w-2xl mx-auto px-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-4" style={{
+            background: 'var(--gradient-primary)',
+            color: 'white',
+            boxShadow: '0 2px 12px hsl(158 64% 42% / 0.3)'
+          }}>
+            <Zap className="w-3.5 h-3.5" />
+            {t('Daily Tracker')}
+          </div>
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="p-2.5 rounded-xl" style={{ background: 'var(--gradient-primary)', boxShadow: '0 4px 14px hsl(158 64% 42% / 0.3)' }}>
+              <Pencil className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+              {t('Daily Focus Tracker')}
+            </h1>
+          </div>
+          <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto">
+            {t('Track. Measure. Optimize your daily performance.')}
+          </p>
+        </div>
+        {/* Language selector in top-right */}
+        <div className="absolute top-4 right-4">
+          <LanguageSelector />
+        </div>
+      </div>
 
-      {/* Top gradient bar */}
+      {/* Top accent line */}
       <div className="h-1 w-full" style={{ background: 'var(--gradient-hero)' }} />
 
-      <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* Header */}
-        <div className="mb-8 animate-fade-in">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3.5">
-              <div className="section-icon section-icon-primary p-2.5">
-                <Activity className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight leading-tight">
-                  {t('Performance & Focus Tracker')}
-                </h1>
-               <p className="text-sm text-muted-foreground mt-0.5">
-                   {t('Track. Measure. Optimize your daily performance.')}
-                 </p>
-              </div>
-            </div>
-            <LanguageSelector />
-          </div>
-        </div>
-
-        {/* Form */}
-        <div className="tracker-card space-y-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+      <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        {/* Form Card */}
+        <div className="tracker-card space-y-8 animate-fade-in -mt-6 relative z-10">
           <ScoreSlider
             label={t('Execution Score')}
             description={t('Measures how effectively you turned priorities into completed results today.')}
@@ -141,14 +146,15 @@ const Index = () => {
             <button
               onClick={handleSave}
               disabled={!canSubmit}
-              className={`w-full py-4 rounded-2xl text-sm font-bold transition-all duration-300 ${
+              className={`w-full py-4 rounded-2xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2.5 ${
                 canSubmit
                   ? 'text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:scale-[0.98]'
                   : 'bg-muted text-muted-foreground cursor-not-allowed shadow-none'
               }`}
               style={canSubmit ? { background: 'var(--gradient-hero)' } : undefined}
             >
-              {t("Save Today's Entry")}
+              <Pencil className="w-4 h-4" />
+              {t("Log Today's Reflection")}
             </button>
           )}
         </div>
