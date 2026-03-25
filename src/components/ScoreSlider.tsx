@@ -9,9 +9,10 @@ interface ScoreSliderProps {
   highLabel: string;
   icon?: ReactNode;
   iconClass?: string;
+  required?: boolean;
 }
 
-export default function ScoreSlider({ label, description, value, onChange, lowLabel, highLabel, icon, iconClass = 'section-icon-primary' }: ScoreSliderProps) {
+export default function ScoreSlider({ label, description, value, onChange, lowLabel, highLabel, icon, iconClass = 'section-icon-primary', required = true }: ScoreSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -62,11 +63,15 @@ export default function ScoreSlider({ label, description, value, onChange, lowLa
             )}
           </div>
         </div>
-        <div className="flex flex-col items-end">
-          <span className={`font-mono text-4xl font-extrabold tabular-nums transition-colors duration-300 ${getScoreColor()}`}>
-            {value}
-          </span>
-          <span className="text-[10px] text-muted-foreground font-mono">/10</span>
+        <div className="flex items-center gap-3">
+          {required && (
+            <span className="text-xs font-semibold text-destructive tracking-wide">Required</span>
+          )}
+          <div className="flex items-center gap-1 px-3 py-1.5 rounded-xl" style={{ background: 'var(--gradient-primary)' }}>
+            <span className="font-mono text-2xl font-extrabold tabular-nums text-white leading-none">
+              {value}
+            </span>
+          </div>
         </div>
       </div>
       <div

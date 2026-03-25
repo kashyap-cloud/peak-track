@@ -9,7 +9,7 @@ interface DepthSelectProps {
   onCustomTextChange: (value: string) => void;
 }
 
-export default function DepthSelect({ value, onChange, customText, onCustomTextChange }: DepthSelectProps) {
+export default function DepthSelect({ value, onChange }: DepthSelectProps) {
   const { t } = useTranslation();
 
   return (
@@ -20,7 +20,7 @@ export default function DepthSelect({ value, onChange, customText, onCustomTextC
         </div>
         <div>
           <label className="text-sm font-bold text-foreground">
-            {t('How deep was your work today?')}
+            {t('What best describes your work depth today?')}
           </label>
           <span className="ml-2 text-xs text-muted-foreground font-medium">{t('Optional')}</span>
         </div>
@@ -46,37 +46,7 @@ export default function DepthSelect({ value, onChange, customText, onCustomTextC
             </div>
           </button>
         ))}
-        <button
-          type="button"
-          onClick={() => onChange('custom')}
-          className={`text-left px-5 py-4 rounded-2xl border transition-all duration-300 group ${
-            value === 'custom'
-              ? 'border-transparent text-primary-foreground shadow-lg shadow-primary/20'
-              : 'border-border bg-card text-secondary-foreground hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5'
-          }`}
-          style={value === 'custom' ? { background: 'var(--gradient-primary)' } : undefined}
-        >
-          <div className={`text-sm font-bold ${value === 'custom' ? '' : 'group-hover:text-foreground transition-colors'}`}>
-            {t('Custom')}
-          </div>
-          <div className={`text-xs mt-0.5 ${value === 'custom' ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
-            {t('Describe your own work depth')}
-          </div>
-        </button>
       </div>
-      {value === 'custom' && (
-        <div className="space-y-2 animate-fade-in">
-          <label className="text-xs text-muted-foreground font-medium">{t('Describe your work depth')}</label>
-          <input
-            type="text"
-            maxLength={150}
-            value={customText}
-            onChange={(e) => onCustomTextChange(e.target.value)}
-            placeholder={t('Example: Strategy planning, creative brainstorming…')}
-            className="w-full px-4 py-3 text-sm rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200"
-          />
-        </div>
-      )}
     </div>
   );
 }
