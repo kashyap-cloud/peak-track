@@ -57,17 +57,9 @@ const Index = () => {
           background: 'radial-gradient(ellipse 60% 80% at 50% 0%, hsl(158 64% 42% / 0.15), transparent)'
         }} />
         <div className="relative max-w-2xl mx-auto px-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-4" style={{
-            background: 'var(--gradient-primary)',
-            color: 'white',
-            boxShadow: '0 2px 12px hsl(158 64% 42% / 0.3)'
-          }}>
-            <Zap className="w-3.5 h-3.5" />
-            {t('Daily Tracker')}
-          </div>
           <div className="flex items-center justify-center gap-3 mb-3">
             <div className="p-2.5 rounded-xl" style={{ background: 'var(--gradient-primary)', boxShadow: '0 4px 14px hsl(158 64% 42% / 0.3)' }}>
-              <Pencil className="w-6 h-6 text-white" />
+              <Target className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
               {t('Daily Focus Tracker')}
