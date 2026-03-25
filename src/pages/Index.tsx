@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, ChevronDown, Check, Target, Brain, TrendingUp, History, Pencil } from 'lucide-react';
+import { Activity, ChevronDown, Check, Target, Brain, TrendingUp, History, ClipboardCheck } from 'lucide-react';
 import ScoreSlider from '@/components/ScoreSlider';
 import PriorityToggle from '@/components/PriorityToggle';
 import BlockerSelect from '@/components/BlockerSelect';
@@ -49,15 +49,13 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Hero Header */}
-      <div className="w-full py-10 sm:py-14 text-center relative overflow-hidden" style={{
-        background: 'linear-gradient(160deg, hsl(158 64% 92%), hsl(180 50% 94%), hsl(205 70% 93%))'
-      }}>
-        <div className="absolute inset-0 opacity-30" style={{
-          background: 'radial-gradient(ellipse 60% 80% at 50% 0%, hsl(158 64% 42% / 0.15), transparent)'
-        }} />
-        <div className="relative max-w-2xl mx-auto px-4">
-          <div className="flex items-center justify-center gap-3 mb-3">
+      {/* Top gradient bar */}
+      <div className="h-1.5 w-full" style={{ background: 'var(--gradient-primary)' }} />
+
+      {/* Hero Header - clean white */}
+      <div className="w-full py-10 sm:py-12 text-center relative bg-card border-b border-border/40">
+        <div className="relative max-w-4xl mx-auto px-4">
+          <div className="flex items-center justify-center gap-3 mb-2">
             <div className="p-2.5 rounded-xl" style={{ background: 'var(--gradient-primary)', boxShadow: '0 4px 14px hsl(158 64% 42% / 0.3)' }}>
               <Activity className="w-6 h-6 text-white" />
             </div>
@@ -69,86 +67,86 @@ const Index = () => {
             {t('Track. Measure. Optimize your daily performance.')}
           </p>
         </div>
-        {/* Language selector in top-right */}
         <div className="absolute top-4 right-4">
           <LanguageSelector />
         </div>
       </div>
 
-      {/* Top accent line */}
-      <div className="h-1 w-full" style={{ background: 'var(--gradient-hero)' }} />
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        {/* Form Card with top gradient border */}
+        <div className="rounded-2xl overflow-hidden shadow-xl shadow-black/[0.04] border border-border bg-card animate-fade-in">
+          <div className="h-1.5 w-full" style={{ background: 'var(--gradient-primary)' }} />
+          <div className="p-6 sm:p-8 space-y-8">
+            {/* Two-column grid for sliders and toggles */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <ScoreSlider
+                label={t('Execution Score')}
+                description={t('Measures how effectively you turned priorities into completed results today.')}
+                value={executionScore}
+                onChange={setExecutionScore}
+                lowLabel={t('Poor execution')}
+                highLabel={t('Exceptional')}
+                icon={<Target className="w-4 h-4 text-primary-foreground" />}
+                iconClass="section-icon-primary"
+              />
 
-      <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        {/* Form Card */}
-        <div className="tracker-card space-y-8 animate-fade-in -mt-6 relative z-10">
-          <ScoreSlider
-            label={t('Execution Score')}
-            description={t('Measures how effectively you turned priorities into completed results today.')}
-            value={executionScore}
-            onChange={setExecutionScore}
-            lowLabel={t('Poor execution')}
-            highLabel={t('Exceptional')}
-            icon={<Target className="w-4 h-4 text-primary-foreground" />}
-            iconClass="section-icon-primary"
-          />
-
-          <div className="border-t border-border/60" />
-
-          <ScoreSlider
-            label={t('Mental Clarity')}
-            description={t('Measures how mentally sharp, focused, and cognitively clear you felt today.')}
-            value={mentalClarity}
-            onChange={setMentalClarity}
-            lowLabel={t('Foggy / Distracted')}
-            highLabel={t('Sharp / Focused')}
-            icon={<Brain className="w-4 h-4 text-primary-foreground" />}
-            iconClass="section-icon-accent"
-          />
-
-          <div className="border-t border-border/60" />
-
-          <PriorityToggle value={priorityCompleted} onChange={setPriorityCompleted} />
-
-          <div className="border-t border-border/60" />
-
-          <BlockerSelect
-            value={primaryBlocker}
-            onChange={setPrimaryBlocker}
-            customText={customBlockerText}
-            onCustomTextChange={setCustomBlockerText}
-          />
-
-          <div className="border-t border-border/60" />
-
-          <DepthSelect
-            value={productivityDepth}
-            onChange={setProductivityDepth}
-            customText={customDepthText}
-            onCustomTextChange={setCustomDepthText}
-          />
-
-          {/* Submit */}
-          {saved && (
-            <div className="flex items-center justify-center gap-2.5 py-4 rounded-2xl text-primary-foreground shadow-lg shadow-primary/20 animate-fade-in" style={{ background: 'var(--gradient-primary)' }}>
-              <Check className="w-5 h-5" />
-              <span className="text-sm font-bold">{t('Entry Saved Successfully')}</span>
+              <PriorityToggle value={priorityCompleted} onChange={setPriorityCompleted} />
             </div>
-          )}
-          {!saved && (
-            <button
-              onClick={handleSave}
-              disabled={!canSubmit}
-              className={`w-full py-4 rounded-2xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2.5 ${
-                canSubmit
-                  ? 'text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:scale-[0.98]'
-                  : 'bg-muted text-muted-foreground cursor-not-allowed shadow-none'
-              }`}
-              style={canSubmit ? { background: 'var(--gradient-hero)' } : undefined}
-            >
-              <Pencil className="w-4 h-4" />
-              {t("Log Today's Reflection")}
-            </button>
-          )}
+
+            <div className="border-t border-border/60" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <ScoreSlider
+                label={t('Mental Clarity')}
+                description={t('Measures how mentally sharp, focused, and cognitively clear you felt today.')}
+                value={mentalClarity}
+                onChange={setMentalClarity}
+                lowLabel={t('Foggy / Distracted')}
+                highLabel={t('Sharp / Focused')}
+                icon={<Brain className="w-4 h-4 text-primary-foreground" />}
+                iconClass="section-icon-accent"
+              />
+
+              <DepthSelect
+                value={productivityDepth}
+                onChange={setProductivityDepth}
+                customText={customDepthText}
+                onCustomTextChange={setCustomDepthText}
+              />
+            </div>
+
+            <div className="border-t border-border/60" />
+
+            <BlockerSelect
+              value={primaryBlocker}
+              onChange={setPrimaryBlocker}
+              customText={customBlockerText}
+              onCustomTextChange={setCustomBlockerText}
+            />
+
+            {/* Submit */}
+            {saved && (
+              <div className="flex items-center justify-center gap-2.5 py-4 rounded-2xl text-primary-foreground shadow-lg shadow-primary/20 animate-fade-in" style={{ background: 'var(--gradient-primary)' }}>
+                <Check className="w-5 h-5" />
+                <span className="text-sm font-bold">{t('Entry Saved Successfully')}</span>
+              </div>
+            )}
+            {!saved && (
+              <button
+                onClick={handleSave}
+                disabled={!canSubmit}
+                className={`w-full py-4 rounded-2xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2.5 ${
+                  canSubmit
+                    ? 'text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:scale-[0.98]'
+                    : 'bg-muted text-muted-foreground cursor-not-allowed shadow-none'
+                }`}
+                style={canSubmit ? { background: 'var(--gradient-hero)' } : undefined}
+              >
+                <ClipboardCheck className="w-4 h-4" />
+                {t("Log Today's Reflection")}
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Action Buttons */}
