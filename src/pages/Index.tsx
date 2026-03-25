@@ -59,7 +59,7 @@ const Index = () => {
         <div className="relative max-w-2xl mx-auto px-4">
           <div className="flex items-center justify-center gap-3 mb-3">
             <div className="p-2.5 rounded-xl" style={{ background: 'var(--gradient-primary)', boxShadow: '0 4px 14px hsl(158 64% 42% / 0.3)' }}>
-              <Target className="w-6 h-6 text-white" />
+              <Activity className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
               {t('Daily Focus Tracker')}
