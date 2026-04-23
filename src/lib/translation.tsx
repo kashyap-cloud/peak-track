@@ -21,116 +21,89 @@ export function useTranslation() {
   return ctx;
 }
 
-// Static list of common languages (no API key needed)
 const LANGUAGES: Language[] = [
   { code: 'en', name: 'English' },
-  { code: 'fr', name: 'French' },
-  { code: 'es', name: 'Spanish' },
-  { code: 'de', name: 'German' },
-  { code: 'it', name: 'Italian' },
-  { code: 'pt', name: 'Portuguese' },
-  { code: 'ru', name: 'Russian' },
-  { code: 'ja', name: 'Japanese' },
-  { code: 'ko', name: 'Korean' },
-  { code: 'zh', name: 'Chinese' },
-  { code: 'ar', name: 'Arabic' },
-  { code: 'hi', name: 'Hindi' },
-  { code: 'bn', name: 'Bengali' },
-  { code: 'tr', name: 'Turkish' },
-  { code: 'nl', name: 'Dutch' },
-  { code: 'pl', name: 'Polish' },
-  { code: 'sv', name: 'Swedish' },
-  { code: 'da', name: 'Danish' },
-  { code: 'fi', name: 'Finnish' },
-  { code: 'no', name: 'Norwegian' },
-  { code: 'th', name: 'Thai' },
-  { code: 'vi', name: 'Vietnamese' },
-  { code: 'id', name: 'Indonesian' },
-  { code: 'ms', name: 'Malay' },
-  { code: 'uk', name: 'Ukrainian' },
-  { code: 'cs', name: 'Czech' },
-  { code: 'ro', name: 'Romanian' },
-  { code: 'hu', name: 'Hungarian' },
-  { code: 'el', name: 'Greek' },
-  { code: 'he', name: 'Hebrew' },
-  { code: 'ta', name: 'Tamil' },
-  { code: 'te', name: 'Telugu' },
-  { code: 'ur', name: 'Urdu' },
-  { code: 'fa', name: 'Persian' },
-  { code: 'sw', name: 'Swahili' },
-  { code: 'fil', name: 'Filipino' },
-  { code: 'bg', name: 'Bulgarian' },
-  { code: 'hr', name: 'Croatian' },
-  { code: 'sk', name: 'Slovak' },
-  { code: 'sl', name: 'Slovenian' },
-  { code: 'lt', name: 'Lithuanian' },
-  { code: 'lv', name: 'Latvian' },
-  { code: 'et', name: 'Estonian' },
-  { code: 'ca', name: 'Catalan' },
-  { code: 'sr', name: 'Serbian' },
-  { code: 'mk', name: 'Macedonian' },
-  { code: 'sq', name: 'Albanian' },
-  { code: 'ka', name: 'Georgian' },
-  { code: 'hy', name: 'Armenian' },
-  { code: 'az', name: 'Azerbaijani' },
-  { code: 'kk', name: 'Kazakh' },
-  { code: 'uz', name: 'Uzbek' },
-  { code: 'mn', name: 'Mongolian' },
-  { code: 'ne', name: 'Nepali' },
-  { code: 'si', name: 'Sinhala' },
-  { code: 'km', name: 'Khmer' },
-  { code: 'lo', name: 'Lao' },
-  { code: 'my', name: 'Burmese' },
-  { code: 'am', name: 'Amharic' },
-  { code: 'zu', name: 'Zulu' },
-  { code: 'yo', name: 'Yoruba' },
-  { code: 'ig', name: 'Igbo' },
-  { code: 'ha', name: 'Hausa' },
-  { code: 'ga', name: 'Irish' },
-  { code: 'cy', name: 'Welsh' },
-  { code: 'eu', name: 'Basque' },
-  { code: 'gl', name: 'Galician' },
-  { code: 'mt', name: 'Maltese' },
-  { code: 'is', name: 'Icelandic' },
-  { code: 'af', name: 'Afrikaans' },
-  { code: 'mr', name: 'Marathi' },
-  { code: 'gu', name: 'Gujarati' },
-  { code: 'kn', name: 'Kannada' },
-  { code: 'ml', name: 'Malayalam' },
-  { code: 'pa', name: 'Punjabi' },
+  { code: 'es', name: 'Español' },
+  { code: 'fr', name: 'Français' },
+  { code: 'pt', name: 'Português' },
+  { code: 'de', name: 'Deutsch' },
+  { code: 'ar', name: 'العربية' },
+  { code: 'hi', name: 'हिन्दी' },
+  { code: 'bn', name: 'বাংলা' },
+  { code: 'zh-CN', name: '简体中文' },
+  { code: 'ja', name: '日本語' },
+  { code: 'id', name: 'Bahasa Indonesia' },
+  { code: 'tr', name: 'Türkçe' },
+  { code: 'vi', name: 'Tiếng Việt' },
+  { code: 'ko', name: '한국어' },
+  { code: 'ru', name: 'Русский' },
+  { code: 'it', name: 'Italiano' },
+  { code: 'pl', name: 'Polski' },
+  { code: 'th', name: 'ไทย' },
+  { code: 'tl', name: 'Filipino' }
 ];
 
 export function TranslationProvider({ children }: { children: ReactNode }) {
   const [currentLang, setCurrentLangState] = useState('en');
+  const [translations, setTranslations] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Check URL param on mount
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const langParam = params.get('lang');
-    if (langParam) {
-      setCurrentLangState(langParam.toLowerCase());
+  const loadTranslations = useCallback(async (lang: string) => {
+    setIsLoading(true);
+    try {
+      const module = await import(`../locales/${lang}.json`);
+      setTranslations(module.default || module);
+    } catch (err) {
+      console.error(`Failed to load translations for ${lang}:`, err);
+      // Fallback to English if possible
+      if (lang !== 'en') {
+        const enModule = await import('../locales/en.json');
+        setTranslations(enModule.default || enModule);
+      }
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
-  const setCurrentLang = useCallback((lang: string) => {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const langParam = params.get('lang')?.toLowerCase();
+    
+    // Validate if the language exists in our supported list
+    const foundLang = LANGUAGES.find(l => l.code.toLowerCase() === langParam);
+    const initialLang = foundLang ? foundLang.code : 'en';
+    
+    setCurrentLangState(initialLang);
+    loadTranslations(initialLang);
+  }, [loadTranslations]);
+
+  const setCurrentLang = useCallback(async (lang: string) => {
     setCurrentLangState(lang);
+    await loadTranslations(lang);
+    
     const url = new URL(window.location.href);
     if (lang === 'en') {
       url.searchParams.delete('lang');
     } else {
-      url.searchParams.set('lang', lang.toUpperCase());
+      url.searchParams.set('lang', lang);
     }
     window.history.replaceState({}, '', url.toString());
-  }, []);
+  }, [loadTranslations]);
 
-  // Without an API key, t() just returns the English text.
-  // To enable actual translation, integrate a translation API via Lovable Cloud.
   const t = useCallback((text: string): string => {
-    return text;
-  }, []);
+    const raw = translations[text] || text;
+    
+    // Simple HTML entity decoder for common characters (Google Translate artifacts)
+    return raw
+      .replace(/&#39;/g, "'")
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+  }, [translations]);
 
   return (
-    <TranslationContext.Provider value={{ currentLang, setCurrentLang, languages: LANGUAGES, t, isLoading: false }}>
+    <TranslationContext.Provider value={{ currentLang, setCurrentLang, languages: LANGUAGES, t, isLoading }}>
       {children}
     </TranslationContext.Provider>
   );

@@ -1,10 +1,37 @@
-import { getEntries, BLOCKERS, DEPTH_OPTIONS } from '@/lib/tracker-data';
+import { useEffect, useState } from 'react';
+import { getEntries, BLOCKERS, DEPTH_OPTIONS, PerformanceEntry } from '@/lib/tracker-data';
 import { useTranslation } from '@/lib/translation';
-import { Calendar, Target, Brain, CheckCircle2, XCircle, AlertTriangle, Layers } from 'lucide-react';
+import { useAuth } from '@/lib/auth';
+import { Calendar, Target, Brain, CheckCircle2, XCircle, AlertTriangle, Layers, Loader2 } from 'lucide-react';
 
 export default function EntryHistory() {
   const { t } = useTranslation();
-  const entries = getEntries().sort((a, b) => b.date.localeCompare(a.date));
+  const { userId } = useAuth();
+  const [entries, setEntries] = useState<PerformanceEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEntries = async () => {
+      setLoading(true);
+      try {
+        const data = await getEntries(userId!);
+        setEntries(data.sort((a, b) => b.date.localeCompare(a.date)));
+      } catch (error) {
+        console.error('Failed to fetch entries:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEntries();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   if (entries.length === 0) {
     return (
@@ -72,6 +99,13 @@ export default function EntryHistory() {
                   {entry.priority_completed ? t('Completed') : t('Not Completed')}
                 </span>
               </div>
+
+              {entry.priority_completion_text && (
+                <div className="w-full mt-1.5 p-3 rounded-xl bg-primary/5 border border-primary/10 animate-fade-in">
+                  <p className="text-xs font-semibold text-primary/80 mb-1">{t('Success Reflection:')}</p>
+                  <p className="text-sm font-medium text-foreground italic">"{entry.priority_completion_text}"</p>
+                </div>
+              )}
 
               {/* Blocker */}
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-warning/10 text-[hsl(var(--warning))]">

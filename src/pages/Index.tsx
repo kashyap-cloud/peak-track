@@ -9,12 +9,15 @@ import EntryHistory from '@/components/EntryHistory';
 import LanguageSelector from '@/components/LanguageSelector';
 import { saveEntry } from '@/lib/tracker-data';
 import { useTranslation } from '@/lib/translation';
+import { useAuth } from '@/lib/auth';
 
 const Index = () => {
   const { t } = useTranslation();
+  const { userId } = useAuth();
   const [executionScore, setExecutionScore] = useState(5);
   const [mentalClarity, setMentalClarity] = useState(5);
   const [priorityCompleted, setPriorityCompleted] = useState<boolean | null>(null);
+  const [priorityCompletionText, setPriorityCompletionText] = useState('');
   const [primaryBlocker, setPrimaryBlocker] = useState('');
   const [customBlockerText, setCustomBlockerText] = useState('');
   const [productivityDepth, setProductivityDepth] = useState('');
@@ -25,26 +28,32 @@ const Index = () => {
 
   const canSubmit = priorityCompleted !== null && primaryBlocker !== '';
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!canSubmit) return;
-    saveEntry({
-      execution_score: executionScore,
-      mental_clarity: mentalClarity,
-      priority_completed: priorityCompleted!,
-      primary_blocker: primaryBlocker,
-      custom_blocker_text: primaryBlocker === 'Other' ? customBlockerText : null,
-      productivity_depth: productivityDepth as any,
-      custom_work_depth_text: productivityDepth === 'custom' ? customDepthText : null,
-    });
-    setSaved(true);
-    setExecutionScore(5);
-    setMentalClarity(5);
-    setPriorityCompleted(null);
-    setPrimaryBlocker('');
-    setCustomBlockerText('');
-    setProductivityDepth('');
-    setCustomDepthText('');
-    setTimeout(() => setSaved(false), 1500);
+    try {
+      await saveEntry(userId!, {
+        execution_score: executionScore,
+        mental_clarity: mentalClarity,
+        priority_completed: priorityCompleted!,
+        priority_completion_text: priorityCompleted ? priorityCompletionText : null,
+        primary_blocker: primaryBlocker,
+        custom_blocker_text: primaryBlocker === 'Other' ? customBlockerText : null,
+        productivity_depth: productivityDepth as any,
+        custom_work_depth_text: productivityDepth === 'custom' ? customDepthText : null,
+      });
+      setSaved(true);
+      setExecutionScore(5);
+      setMentalClarity(5);
+      setPriorityCompleted(null);
+      setPriorityCompletionText('');
+      setPrimaryBlocker('');
+      setCustomBlockerText('');
+      setProductivityDepth('');
+      setCustomDepthText('');
+      setTimeout(() => setSaved(false), 1500);
+    } catch (error) {
+      console.error('Failed to save entry:', error);
+    }
   };
 
   return (
@@ -90,7 +99,12 @@ const Index = () => {
                 iconClass="section-icon-primary"
               />
 
-              <PriorityToggle value={priorityCompleted} onChange={setPriorityCompleted} />
+              <PriorityToggle 
+                value={priorityCompleted} 
+                onChange={setPriorityCompleted} 
+                textValue={priorityCompletionText}
+                onTextChange={setPriorityCompletionText}
+              />
             </div>
 
             <div className="border-t border-border/60" />

@@ -4,9 +4,11 @@ import { useTranslation } from '@/lib/translation';
 interface PriorityToggleProps {
   value: boolean | null;
   onChange: (value: boolean) => void;
+  textValue: string;
+  onTextChange: (value: string) => void;
 }
 
-export default function PriorityToggle({ value, onChange }: PriorityToggleProps) {
+export default function PriorityToggle({ value, onChange, textValue, onTextChange }: PriorityToggleProps) {
   const { t } = useTranslation();
 
   return (
@@ -41,13 +43,27 @@ export default function PriorityToggle({ value, onChange }: PriorityToggleProps)
           onClick={() => onChange(false)}
           className={`flex-1 flex items-center justify-center gap-2.5 py-4 rounded-2xl text-sm font-bold transition-all duration-300 border ${
             value === false
-              ? 'bg-secondary text-foreground border-foreground/15 shadow-md'
+              ? 'text-white border-transparent shadow-lg shadow-destructive/20'
               : 'border-border bg-card text-secondary-foreground hover:border-primary/30 hover:shadow-md'
           }`}
+          style={value === false ? { background: 'linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%)' } : undefined}
         >
+          {value === false && <X className="w-4 h-4" />}
           {t('Not yet')}
         </button>
       </div>
+
+      {value === true && (
+        <div className="animate-fade-in pt-2">
+          <textarea
+            value={textValue}
+            onChange={(e) => onTextChange(e.target.value)}
+            placeholder={t('What is one thing you did well today?')}
+            rows={3}
+            className="w-full px-4 py-3 text-sm rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200 resize-none font-medium text-center"
+          />
+        </div>
+      )}
     </div>
   );
 }

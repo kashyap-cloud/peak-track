@@ -3,7 +3,7 @@ import { Globe, ChevronDown, Search } from 'lucide-react';
 import { useTranslation } from '@/lib/translation';
 
 export default function LanguageSelector() {
-  const { currentLang, setCurrentLang, languages, isLoading } = useTranslation();
+  const { currentLang, setCurrentLang, languages, isLoading, t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const ref = useRef<HTMLDivElement>(null);
@@ -57,7 +57,7 @@ export default function LanguageSelector() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search languages..."
+                placeholder={t('Search languages...')}
                 className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-border bg-secondary/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
@@ -82,7 +82,7 @@ export default function LanguageSelector() {
               </button>
             ))}
             {filtered.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-4">No languages found</p>
+              <p className="text-sm text-muted-foreground text-center py-4">{t('No languages found')}</p>
             )}
           </div>
         </div>

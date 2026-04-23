@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, ReactNode } from 'react';
+import { useTranslation } from '@/lib/translation';
 
 interface ScoreSliderProps {
   label: string;
@@ -13,6 +14,7 @@ interface ScoreSliderProps {
 }
 
 export default function ScoreSlider({ label, description, value, onChange, lowLabel, highLabel, icon, iconClass = 'section-icon-primary', required = true }: ScoreSliderProps) {
+  const { t } = useTranslation();
   const trackRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -65,7 +67,7 @@ export default function ScoreSlider({ label, description, value, onChange, lowLa
         </div>
         <div className="flex items-center gap-3">
           {required && (
-            <span className="text-xs font-semibold text-destructive tracking-wide">Required</span>
+            <span className="text-xs font-semibold text-destructive tracking-wide">{t('Required')}</span>
           )}
           <div className="flex items-center gap-1 px-3 py-1.5 rounded-xl" style={{ background: 'var(--gradient-primary)' }}>
             <span className="font-mono text-2xl font-extrabold tabular-nums text-white leading-none">

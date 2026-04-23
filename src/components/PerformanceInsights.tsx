@@ -1,13 +1,32 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, Cell, CartesianGrid } from 'recharts';
-import { TrendingUp, Brain, Shield, BarChart3 } from 'lucide-react';
-import { getLast7Days, getLast14Days, getConsistencyZone } from '@/lib/tracker-data';
+import { TrendingUp, Brain, Shield, BarChart3, Loader2 } from 'lucide-react';
+import { getLast7Days, getLast14Days, getConsistencyZone, PerformanceEntry } from '@/lib/tracker-data';
 import { useTranslation } from '@/lib/translation';
+import { useAuth } from '@/lib/auth';
 
 export default function PerformanceInsights() {
   const { t } = useTranslation();
-  const last7 = getLast7Days();
-  const last14 = getLast14Days();
+  const { userId } = useAuth();
+  const [last7, setLast7] = useState<PerformanceEntry[]>([]);
+  const [last14, setLast14] = useState<PerformanceEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [d7, d14] = await Promise.all([getLast7Days(userId!), getLast14Days(userId!)]);
+        setLast7(d7);
+        setLast14(d14);
+      } catch (error) {
+        console.error('Failed to fetch insights data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const trendData = useMemo(() => {
     return last7.map(e => ({
@@ -43,7 +62,15 @@ export default function PerformanceInsights() {
     return improvement > 0 ? improvement : null;
   }, [last7]);
 
-  const totalEntries = getLast14Days().length;
+  const totalEntries = last14.length;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   if (totalEntries < 3) {
     return (
@@ -125,7 +152,7 @@ export default function PerformanceInsights() {
               <h3 className="text-sm font-bold text-foreground">{t('Focus × Execution')}</h3>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              On days your Mental Clarity is above 7, your Execution improves by{' '}
+              {t('On days your Mental Clarity is above 7, your Execution improves by')}{' '}
               <span className="font-mono font-extrabold text-primary text-lg">{correlation}%</span>.
             </p>
           </div>
